@@ -6,7 +6,6 @@
 |---|---|
 | 목표 | WSL2 기반 리눅스 실습 환경을 구축하고 Git/GitHub로 버전 관리를 시작한다 |
 | 환경 | Windows + WSL2 (Ubuntu 24.04), Git, GitHub CLI |
-| 결과물 | 공개 저장소 [hyeonseo03/devops](https://github.com/hyeonseo03/devops) |
 
 ## 2. 학습 내용
 

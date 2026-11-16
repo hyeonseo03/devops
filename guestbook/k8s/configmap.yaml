@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guestbook-config
+data:
+  APP_TITLE: "현서의 방명록 v2 (k8s)"
+  THEME_COLOR: "#f59e0b"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"

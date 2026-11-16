@@ -11,6 +11,7 @@
 - Ollama + Qwen (`qwen3:0.6b`)
 - Docker Desktop
 - minikube (`--driver=docker`) + kubectl
+- GitHub Actions (ruff, unittest, docker/build-push-action) + GHCR
 
 ## 주차별 내용
 

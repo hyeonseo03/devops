@@ -2,7 +2,7 @@
 
 인하공업전문대학 컴퓨터정보공학과 · 2026-2 DevOps 실습 기록
 
-리눅스 기초부터 셸 스크립트, Git 협업, Docker, Docker Compose, 쿠버네티스까지 매주 실습한 내용을 주차별 폴더에 정리했다.
+리눅스 기초부터 셸 스크립트, Git 협업, Docker, Docker Compose, 쿠버네티스, GitHub Actions까지 매주 실습한 내용을 주차별 폴더에 정리했다.
 
 ## 실습 환경
 
@@ -27,3 +27,4 @@
 | [9주차](./week09/) | 쿠버네티스 첫 배포 | minikube 클러스터, 자가 치유, 방명록 Pod 띄우기 |
 | [10주차](./week10/) | Deployment와 Service | YAML 선언형 배포, replicas 5, 로드밸런싱, v1 → v2 롤링 업데이트, 롤백 |
 | [11주차](./week11/) | 설정 분리와 상태 점검 | ConfigMap/Secret, Redis 연결, readiness/liveness 프로브, 트러블슈팅 |
+| [12주차](./week12/) | 깃허브 액션 (CI) | 린트·테스트·빌드·GHCR 자동 푸시, 빨간X 실험 3종, main 브랜치 보호 |

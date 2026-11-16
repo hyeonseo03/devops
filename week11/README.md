@@ -1,4 +1,4 @@
-# Week 11 - 쿠버네티스 설정과 상태 점검
+# 11주차 - 쿠버네티스 설정과 상태 점검
 
 이번 주는 이미지는 그대로 두고 설정만 바깥으로 빼는 걸 해봤다.
 ConfigMap/Secret을 만들어서 방명록에 환경 변수로 넣고, Redis를 쿠버네티스에 같이 띄워서 연결했다.
@@ -36,15 +36,10 @@ kubectl get secret guestbook-secret -o jsonpath='{.data.REDIS_PASSWORD}' | base6
 ![secret decode](images/01-secret-decode.png)
 
 **왜 안전하지 않은가?**
-Secret은 이름만 비밀이지 암호화가 아니라 base64로 **표기 방식만 바꾼 것(인코딩)**이다. 열쇠가 필요 없어서 kubectl 권한만 있으면 누구나 원래 값을 볼 수 있다.
+Secret은 이름만 비밀이지 암호화가 아니라 base64로 표기 방식만 바꾼 것(인코딩)이다. 열쇠가 필요 없어서 kubectl 권한만 있으면 누구나 원래 값을 볼 수 있다.
 그래서 `secret.yaml`은 `.gitignore`에 넣고, GitHub에는 비밀번호를 `CHANGE_ME`로 바꾼 `secret.yaml.example`만 올렸다.
 `git status`에 `secret.yaml`이 안 뜨고 example만 뜨는 것도 확인했다.
 
-| | 하는 일 | 되돌리기 |
-|---|---|---|
-| 인코딩 (base64) | 표기만 바꿈 | 누구나 가능 |
-| 암호화 | 열쇠로 잠금 | 열쇠 있어야 가능 |
-| 해시 | 지문 만들기 | 불가능 (비교만) |
 
 <br>
 
@@ -60,7 +55,7 @@ kubectl logs -l app=guestbook | grep Redis
 # [INFO] Redis 연결 성공: redis:6379
 ```
 
-`minikube service guestbook`으로 들어가 보니 배지가 **저장소: Redis**로 바뀌어 있었다.
+`minikube service guestbook`으로 들어가 보니 배지가 저장소: Redis로 바뀌어 있었다.
 제목은 ConfigMap에 넣은 "현서의 방명록 (k8s)", 색은 파란색(`#2563eb`)이다.
 이미지는 6주차 v2 그대로인데(하단 "6주차" 문구) 제목이랑 색은 ConfigMap 값으로 덮어써졌다.
 
@@ -83,10 +78,10 @@ kubectl rollout restart deployment guestbook
 kubectl rollout status deployment guestbook
 ```
 
-새로고침하니까 제목이 "현서의 방명록 **v2** (k8s)"로 바뀌고 제목, 배지, 버튼 색이 전부 파란색 → 주황색(`#f59e0b`)으로 바뀌었다.
+새로고침하니까 제목이 "현서의 방명록 v2 (k8s)"로 바뀌고 제목, 배지, 버튼 색이 전부 파란색 → 주황색(`#f59e0b`)으로 바뀌었다.
 
 - Pod/Host: `guestbook-8866df8bb-j8cmk` → `guestbook-f7df9c5c6-c757f` (rollout restart로 새 틀의 Pod로 교체됨)
-- 방문 1회 → **2회**
+- 방문 1회 → 2회
 
 여기서 신기했던 건 방문 수다. Pod가 아예 새 걸로 바뀌었는데 방문 수가 1부터 다시 시작하지 않고 2로 이어졌다.
 10주차에는 Memory 모드라 Pod마다 방문 수가 따로 놀았는데, 이제는 숫자를 Pod 안이 아니라 Redis에 저장하니까 Pod가 바뀌어도 이어진다(무상태 앱 + 공유 DB).
@@ -97,7 +92,7 @@ kubectl rollout status deployment guestbook
 - 코드 고쳤나? → 아니
 - 데이터(방문 수)가 날아갔나? → 아니
 
-`rollout restart`가 필요한 이유는 환경 변수는 프로세스가 **시작할 때** 한 번 읽어서, ConfigMap을 바꿔도 이미 떠 있는 Pod는 옛날 값을 계속 쓰기 때문이다.
+`rollout restart`가 필요한 이유는 환경 변수는 프로세스가 시작할 때 한 번 읽어서, ConfigMap을 바꿔도 이미 떠 있는 Pod는 옛날 값을 계속 쓰기 때문이다.
 
 <br>
 
@@ -109,7 +104,7 @@ kubectl rollout status deployment guestbook
 kubectl scale deployment redis --replicas=0
 ```
 
-`redis-...-95zm5`가 Terminating → Completed로 꺼지고 나서, guestbook 두 개(`78n55`, `c757f`)가 **STATUS는 Running인데 READY가 0/1**로 바뀌었다.
+`redis-...-95zm5`가 Terminating → Completed로 꺼지고 나서, guestbook 두 개(`78n55`, `c757f`)가 STATUS는 Running인데 READY가 0/1로 바뀌었다.
 앱은 살아 있는데 Redis가 없으니 `/readyz`가 503을 줘서, 쿠버네티스가 "손님 받을 준비 안 됨"으로 보고 서비스 명단에서 뺀 것이다. RESTARTS는 0 그대로라서 재시작은 안 한다.
 
 다시 Redis를 1개로 늘리니까 새 Pod `55dkm`이 뜨고, 내가 guestbook에 아무것도 안 했는데 두 개 다 알아서 1/1로 돌아왔다.
@@ -132,7 +127,7 @@ kubectl scale deployment redis --replicas=1
 kubectl patch deployment guestbook -p '{"spec":{"template":{"spec":{"containers":[{"name":"web","livenessProbe":{"httpGet":{"path":"/devops","port":5000},"periodSeconds":5,"failureThreshold":2}}]}}}}'
 ```
 
-새 Pod(`rlcd4`, `xbdzk`)가 뜨고 1분 반쯤 지나니까 둘 다 **RESTARTS 2**가 됐다.
+새 Pod(`rlcd4`, `xbdzk`)가 뜨고 1분 반쯤 지나니까 둘 다 RESTARTS 2가 됐다.
 앱은 멀쩡한데 프로브가 없는 주소를 찔러서 404를 받으니까 죽었다고 판단하고 계속 재시작한다.
 
 ![liveness restarts](images/05-liveness-restarts.png)
@@ -158,11 +153,10 @@ kubectl get events --sort-by=.lastTimestamp | grep -i liveness | tail -5
 
 ## 트러블슈팅 3단 루틴 (내 말로)
 
-1. **`kubectl get pods`** - 일단 전체 상태부터 본다. STATUS, READY, RESTARTS 세 칸만 봐도 대충 어디가 문제인지 감이 온다. (READY 0/1이면 readiness, RESTARTS가 오르면 liveness나 앱 에러)
-2. **`kubectl describe pod <이름>`** - 맨 아래 Events를 본다. 쿠버네티스가 "내가 왜 이렇게 했는지"를 적어두는 곳이라 이번에도 404가 여기 그대로 나왔다. 이미지 오타나 ConfigMap 이름 오타 같은 건 여기서 끝난다.
-3. **`kubectl logs <이름>`** (계속 죽으면 `--previous`) - 컨테이너는 떴는데 앱 안에서 에러가 난 경우는 Events에는 "계속 죽는다"만 나오고 진짜 이유는 앱 로그에 있다.
+1. `kubectl get pods` - 일단 전체 상태부터 본다. STATUS, READY, RESTARTS 세 칸만 봐도 대충 어디가 문제인지 감이 온다. (READY 0/1이면 readiness, RESTARTS가 오르면 liveness나 앱 에러)
+2. `kubectl describe pod <이름>` - 맨 아래 Events를 본다. 쿠버네티스가 "내가 왜 이렇게 했는지"를 적어두는 곳이라 이번에도 404가 여기 그대로 나왔다. 이미지 오타나 ConfigMap 이름 오타 같은 건 여기서 끝난다.
+3. `kubectl logs <이름>` (계속 죽으면 `--previous`) - 컨테이너는 떴는데 앱 안에서 에러가 난 경우는 Events에는 "계속 죽는다"만 나오고 진짜 이유는 앱 로그에 있다.
 
-병원으로 치면 get은 "어디 아파요?", describe는 진료 기록, logs는 정밀 검사 같다.
 AI한테 물어보더라도 이 세 개 결과를 먼저 모아야 뭘 붙여넣을지 알 수 있고, 붙여넣기 전에 비밀번호 같은 값은 지워야 한다.
 
 <br>
